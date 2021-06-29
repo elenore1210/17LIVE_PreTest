@@ -14,8 +14,6 @@ class PostController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    $this->postService = new PostService();
-
     public function add(Request $request)
     { 
         $content  = isset($request->content) ? $request->content : null;
@@ -23,15 +21,15 @@ class PostController extends BaseController
         $messages = isset($request->messages) ? $request->messages : null;
 
         if (is_null($content) || is_null($mobile) || is_null($messages)) {
-            return response()->json('error');
+            return response()->json('400');
+        }
+        $this->postService = new PostService();
+        $result = $this->postService->insertPostData($title, $content, $messages);
+
+        if (!$result) {
+            return response()->json('400');
         }
 
-        $result = $this->postService->sendSmsByMobile($title, $content, $messages);
-
-        if (!isset($result->status) || $result->status != 'success') {
-            return response()->json('error');
-        }
-
-        return response()->json('success');
+        return response()->json('200');
     }
 }

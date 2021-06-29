@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\PostModels;
 use App\Models\CommentModels;
-use App\Services\BaseService; //這個再看看狀況
+use App\Services\BaseService;
 
 class MemberInteractionService extends BaseService
 {
@@ -17,6 +17,10 @@ class MemberInteractionService extends BaseService
         ];
         $postData = PostModels::insert($postData);
 
+        if (empty($postData)) {
+            return false;
+        }
+
         $commentsArray = [];
         foreach ($messages as $message) {
             if (!empty($message)) {
@@ -28,10 +32,9 @@ class MemberInteractionService extends BaseService
         }
         $commentData = CommentModels::insert($commentsArray);
 
-        if (!empty($commentData)) {
-            return true;
-        } else {
-            return false;
+        if (empty($commentData)) {
+            return false; 
         } 
+        return true;
     }
 }
